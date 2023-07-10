@@ -15,6 +15,7 @@ public class MainWindow {
 
     public MainWindow() {
         allTasks = new TaskManager();
+        this.buttonBar = new ButtonBar();
         prepareWindow();
     }
 
@@ -23,8 +24,11 @@ public class MainWindow {
         mainFrame.setSize(450, 660);
         mainFrame.setResizable(false);
         mainFrame.setVisible(true);
-        mainFrame.setBackground(new Color(204, 0, 0));
+        mainFrame.getContentPane().setBackground(new Color(204, 0, 0));
+
+        mainFrame.add(buttonBar, BorderLayout.NORTH);
 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
     }
 }
