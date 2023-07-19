@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
+import java.util.Iterator;
 
 public class MainWindow extends JFrame {
     private JPanel taskList;
@@ -42,10 +44,6 @@ public class MainWindow extends JFrame {
         addNewTaskButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         addNewTaskButton.setBounds(10, 630, 120, 50);
         addNewTaskButton.setFocusPainted(false);
-        /*addNewTaskButton.setOpaque(false);
-        addNewTaskButton.setBorderPainted(false);
-        addNewTaskButton.setContentAreaFilled(false);
-        addNewTaskButton.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));*/
 
         //clear finished button:
         JButton clearButton = new JButton("Clear Finished");
@@ -65,14 +63,43 @@ public class MainWindow extends JFrame {
         this.getContentPane().add(sortButton);
         this.getContentPane().add(scrollPane);
 
+        //Action listeners:
         //add new task ActionListener:
         addNewTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
-                System.out.println("under construction");
+                //create new task
+                TaskItem task = new TaskItem(taskList);
+                taskList.add(task);
+
+                //if there were any previous tasks, it loses the focus:
+                if(taskList.getComponentCount() > 1) {
+                    TaskItem previousTask = (TaskItem) taskList.getComponent((taskList.getComponentCount() - 2));
+                    previousTask.getTaskDescription().setBackground(null);
+                }
+
+                //the new task gets the focus:
+                task.getTaskDescription().requestFocus();
+                repaint();
+                revalidate();
             }
         });
 
+        //clear finished tasks:
+        clearButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //need to use iterator for delete:
+                Iterator<Component> iterator = Arrays.stream(taskList.getComponents()).iterator();
+                while (iterator.hasNext()) {
+                    Component i = iterator.next();
+                    if(((TaskItem) i).getIsDone()) {
+                        ((TaskItem) i).deleteTask();
+                    }
+                }
+            }
+        });
     }
+
+
 }
