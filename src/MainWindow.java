@@ -12,7 +12,7 @@ public class MainWindow extends JFrame {
     public MainWindow() {
         super("To Do List");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(540, 760));
+        setPreferredSize(new Dimension(570, 760));  //originally width was 540
         pack();
         setResizable(false);
         setVisible(true);
@@ -33,11 +33,12 @@ public class MainWindow extends JFrame {
 
         //scroll:
         JScrollPane scrollPane = new JScrollPane(listContainer);
-        scrollPane.setBounds(8, 10, 510, 585);
+        scrollPane.setBounds(8, 10, 540, 585);
         scrollPane.setBorder(BorderFactory.createLoweredBevelBorder());
-        scrollPane.setMaximumSize(new Dimension(510, 585));
+        scrollPane.setMaximumSize(new Dimension(540, 585));
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(20);
 
         //add new task button:
         JButton addNewTaskButton = new JButton("Add Task");
