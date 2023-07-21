@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Comparator;
 
 public class TaskItem extends JPanel {
     private JCheckBox isDoneBox;
@@ -8,13 +9,10 @@ public class TaskItem extends JPanel {
     private JComboBox priorityComboBox;
     private JButton deleteButton;
     private JPanel containerPanel;
-    private boolean isDone;
-    private Priority priority;
+    private Task task;
 
     public TaskItem(JPanel givenContainerPanel) {
         this.containerPanel = givenContainerPanel;
-        this.isDone = false;
-        this.priority = Priority.LOW;
         this.setBackground(new Color(237, 237, 142));
         initializeTaskItem(givenContainerPanel);
     }
@@ -35,10 +33,6 @@ public class TaskItem extends JPanel {
             public void focusLost(FocusEvent e) {
                 taskDescription.setBackground(null);
                 reColor();
-                /*if(isDone) {
-                    taskDescription.setBackground(new Color(108, 173, 108));
-
-                }*/
             }
         });
 
@@ -51,10 +45,10 @@ public class TaskItem extends JPanel {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if(!isDoneBox.isSelected()) {
-                    isDone = false;
+                    task.setIsDone(false);
                 }
                 else {
-                    isDone = true;
+                    task.setIsDone(true);
                 }
                 reColor();
             }
@@ -70,7 +64,7 @@ public class TaskItem extends JPanel {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 //we can cast it since the combo-box only contains Priority values:
-                priority = (Priority) priorityComboBox.getSelectedItem();
+                task.setPriority((Priority) priorityComboBox.getSelectedItem());
                 reColor();
             }
         });
@@ -105,17 +99,17 @@ public class TaskItem extends JPanel {
 
     //color changer method:
     public void reColor() {
-        if(isDone) {
+        if(task.getIsDone()) {
             this.setBackground(new Color(108, 173, 108));
         }
         else {
-            if(priority.equals(Priority.LOW)) {
+            if(task.getPriority().equals(Priority.LOW)) {
                 this.setBackground(new Color(237, 237, 142));
             }
-            else if (priority.equals(Priority.MEDIUM)) {
+            else if (task.getPriority().equals(Priority.MEDIUM)) {
                 this.setBackground(new Color(224, 171, 90));
             }
-            else if (priority.equals(Priority.HIGH)) {
+            else if (task.getPriority().equals(Priority.HIGH)) {
                 this.setBackground(new Color(194, 84, 56));
             }
         }
@@ -123,6 +117,8 @@ public class TaskItem extends JPanel {
 
 
     //getters and setters:
-    public boolean getIsDone() { return this.isDone; }
     public JTextPane getTaskDescription() { return this.taskDescription; }
+    public Task getTask() { return this.task; }
+
+    public void setTask(Task task) { this.task = task; }
 }

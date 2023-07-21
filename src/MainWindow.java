@@ -2,12 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
 public class MainWindow extends JFrame {
-    private JPanel taskList;
+    private JPanel taskItemList;
     private JPanel listContainer;
+    private ArrayList<Task> taskList;
 
     public MainWindow() {
         super("To Do List");
@@ -19,16 +21,17 @@ public class MainWindow extends JFrame {
         getContentPane().setBackground(new Color(69, 69, 69));
         setLocationRelativeTo(null);
         setLayout(null);
+        this.taskList = new ArrayList<Task>();
 
         this.initializeFrame();
     }
 
     public void initializeFrame() {
-        this.taskList = new JPanel();
+        this.taskItemList = new JPanel();
         this.listContainer = new JPanel();
 
-        taskList.setLayout(new BoxLayout(taskList, BoxLayout.Y_AXIS));
-        listContainer.add(taskList);
+        taskItemList.setLayout(new BoxLayout(taskItemList, BoxLayout.Y_AXIS));
+        listContainer.add(taskItemList);
         listContainer.setBackground(new Color(156, 156, 156));
 
         //scroll:
@@ -69,38 +72,49 @@ public class MainWindow extends JFrame {
         addNewTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //create new task
-                TaskItem task = new TaskItem(taskList);
-                taskList.add(task);
+                //create new Task and TaskItem:
+                Task newTask = new Task("", Priority.LOW);
+                taskList.add(newTask);
+
+                TaskItem newTaskItem = new TaskItem(taskItemList);
+                newTaskItem.setTask(newTask);
+                taskItemList.add(newTaskItem);
+
 
                 //if there were any previous tasks, it loses the focus:
-                if(taskList.getComponentCount() > 1) {
-                    TaskItem previousTask = (TaskItem) taskList.getComponent((taskList.getComponentCount() - 2));
+                if(taskItemList.getComponentCount() > 1) {
+                    TaskItem previousTask = (TaskItem) taskItemList.getComponent((taskItemList.getComponentCount() - 2));
                     previousTask.getTaskDescription().setBackground(null);
                 }
 
                 //the new task gets the focus:
-                task.getTaskDescription().requestFocus();
+                newTaskItem.getTaskDescription().requestFocus();
                 repaint();
                 revalidate();
             }
         });
 
-        //clear finished tasks:
+        //clear finished tasks ActionListener:
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //need to use iterator for delete:
-                Iterator<Component> iterator = Arrays.stream(taskList.getComponents()).iterator();
+                Iterator<Component> iterator = Arrays.stream(taskItemList.getComponents()).iterator();
                 while (iterator.hasNext()) {
                     Component i = iterator.next();
-                    if(((TaskItem) i).getIsDone()) {
+                    if(((TaskItem) i).getTask().getIsDone()) {
                         ((TaskItem) i).deleteTask();
                     }
                 }
             }
         });
+
+        //sort button ActionListener:
+        sortButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+            }
+        });
     }
-
-
 }
