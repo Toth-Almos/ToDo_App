@@ -2,9 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.*;
+import java.util.List;
 
 public class MainWindow extends JFrame {
     private JPanel taskItemList;
@@ -106,6 +105,15 @@ public class MainWindow extends JFrame {
                         ((TaskItem) i).deleteTask();
                     }
                 }
+
+                //iterator for deleting elements from taskList:
+                Iterator<Task> taskIterator = taskList.iterator();
+                while (taskIterator.hasNext()) {
+                    Task j = taskIterator.next();
+                    if(j.getIsDone()) {
+                        taskIterator.remove();
+                    }
+                }
             }
         });
 
@@ -113,7 +121,44 @@ public class MainWindow extends JFrame {
         sortButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
+                System.out.println("number of tasks: " + taskList.size());
+
+                //delete all taskItems:
+                Iterator<Component> iterator = Arrays.stream(taskItemList.getComponents()).iterator();
+                while (iterator.hasNext()) {
+                    Component i = iterator.next();
+                    ((TaskItem) i).deleteTask();
+                }
+
+                //sort taskList:
+                Collections.sort(taskList, new PriorityComparator());
+
+                //add all task as taskItems in the sorted order:
+                for (Task t : taskList) {
+                    //create new Task and TaskItem:
+                    TaskItem newTaskItem = new TaskItem(taskItemList);
+                    newTaskItem.setTask(t);
+                    taskItemList.add(newTaskItem);
+
+                    //check checkbox if needed:
+                    if(t.getIsDone()) {
+                        newTaskItem.checkCheckBox();
+                    }
+
+                    //set priority combo boxes:
+                    newTaskItem.setPriorityComboBoxToTaskPriority();
+
+                    //if there were any previous tasks, it loses the focus:
+                    if(taskItemList.getComponentCount() > 1) {
+                        TaskItem previousTask = (TaskItem) taskItemList.getComponent((taskItemList.getComponentCount() - 2));
+                        previousTask.getTaskDescription().setBackground(null);
+                    }
+
+                    //the new task gets the focus:
+                    newTaskItem.getTaskDescription().requestFocus();
+                    repaint();
+                    revalidate();
+                }
             }
         });
     }

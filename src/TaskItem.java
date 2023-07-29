@@ -17,6 +17,13 @@ public class TaskItem extends JPanel {
         initializeTaskItem(givenContainerPanel);
     }
 
+    public TaskItem(JPanel givenContainerPanel, Task task) {
+        this.containerPanel = givenContainerPanel;
+        this.setBackground(new Color(237, 237, 142));
+        initializeTaskItem(givenContainerPanel);
+        this.task = task;
+    }
+
     public void initializeTaskItem(JPanel givenContainerPanel) {
         //task description:
         this.taskDescription = new JTextPane();
@@ -115,6 +122,11 @@ public class TaskItem extends JPanel {
         }
     }
 
+
+    public void checkCheckBox() { this.isDoneBox.setSelected(true); }
+    public void setPriorityComboBoxToTaskPriority() {
+        this.priorityComboBox.setSelectedItem(this.task.getPriority());
+    }
 
     //getters and setters:
     public JTextPane getTaskDescription() { return this.taskDescription; }
