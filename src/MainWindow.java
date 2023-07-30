@@ -60,10 +60,17 @@ public class MainWindow extends JFrame {
         sortButton.setBounds(270, 630, 120, 50);
         sortButton.setFocusPainted(false);
 
+        //sort type label:
+        JLabel sortTypeLabel = new JLabel("None");
+        sortTypeLabel.setBounds(400, 630, 120, 50);
+        sortTypeLabel.setForeground(Color.WHITE);
+        sortTypeLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+
         //add them to the frame:
         this.getContentPane().add(addNewTaskButton);
         this.getContentPane().add(clearButton);
         this.getContentPane().add(sortButton);
+        this.getContentPane().add(sortTypeLabel);
         this.getContentPane().add(scrollPane);
 
         //Action listeners:
@@ -88,6 +95,7 @@ public class MainWindow extends JFrame {
 
                 //the new task gets the focus:
                 newTaskItem.getTaskDescription().requestFocus();
+                sortTypeLabel.setText("None");
                 repaint();
                 revalidate();
             }
@@ -114,6 +122,9 @@ public class MainWindow extends JFrame {
                         taskIterator.remove();
                     }
                 }
+                sortTypeLabel.setText("None");
+                repaint();
+                revalidate();
             }
         });
 
@@ -130,8 +141,21 @@ public class MainWindow extends JFrame {
                     ((TaskItem) i).deleteTask();
                 }
 
-                //sort taskList:
-                Collections.sort(taskList, new PriorityComparator());
+                //sort taskList and rotate sorting types:
+                switch (sortTypeLabel.getText()) {
+                    case "None":
+                    case "Is Done":
+                        Collections.sort(taskList, new PriorityComparator());
+                        //sortTypeNumber = 1;
+                        sortTypeLabel.setText("Priority");
+                        break;
+                    case "Priority":
+                        Collections.sort(taskList, new IsDoneComparator());
+                        //sortTypeNumber = 2;
+                        sortTypeLabel.setText("Is Done");
+                        break;
+                }
+
 
                 //add all task as taskItems in the sorted order:
                 for (Task t : taskList) {
