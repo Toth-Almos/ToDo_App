@@ -79,10 +79,10 @@ public class MainWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //create new Task and TaskItem:
-                Task newTask = new Task("", Priority.LOW);
+                Task newTask = new Task("Test Name hihi", Priority.LOW);
                 taskList.add(newTask);
 
-                TaskItem newTaskItem = new TaskItem(taskItemList);
+                TaskItem newTaskItem = new TaskItem(taskItemList, getMainWindow(), newTask);
                 newTaskItem.setTask(newTask);
                 taskItemList.add(newTaskItem);
 
@@ -90,11 +90,11 @@ public class MainWindow extends JFrame {
                 //if there were any previous tasks, it loses the focus:
                 if(taskItemList.getComponentCount() > 1) {
                     TaskItem previousTask = (TaskItem) taskItemList.getComponent((taskItemList.getComponentCount() - 2));
-                    previousTask.getTaskDescription().setBackground(null);
+                    //previousTask.getTaskDescription().setBackground(null);
                 }
 
                 //the new task gets the focus:
-                newTaskItem.getTaskDescription().requestFocus();
+                //newTaskItem.getTaskDescription().requestFocus();
                 sortTypeLabel.setText("None");
                 repaint();
                 revalidate();
@@ -160,7 +160,7 @@ public class MainWindow extends JFrame {
                 //add all task as taskItems in the sorted order:
                 for (Task t : taskList) {
                     //create new Task and TaskItem:
-                    TaskItem newTaskItem = new TaskItem(taskItemList);
+                    TaskItem newTaskItem = new TaskItem(taskItemList, getMainWindow(), t);
                     newTaskItem.setTask(t);
                     taskItemList.add(newTaskItem);
 
@@ -175,15 +175,22 @@ public class MainWindow extends JFrame {
                     //if there were any previous tasks, it loses the focus:
                     if(taskItemList.getComponentCount() > 1) {
                         TaskItem previousTask = (TaskItem) taskItemList.getComponent((taskItemList.getComponentCount() - 2));
-                        previousTask.getTaskDescription().setBackground(null);
+                        //previousTask.getTaskDescription().setBackground(null);
                     }
 
                     //the new task gets the focus:
-                    newTaskItem.getTaskDescription().requestFocus();
+                    //newTaskItem.getTaskDescription().requestFocus();
                     repaint();
                     revalidate();
                 }
             }
         });
     }
+
+    public MainWindow getMainWindow() { return this; }
+
+    public void deleteTask(Task givenTask) {
+        this.taskList.remove(givenTask);
+    }
+
 }

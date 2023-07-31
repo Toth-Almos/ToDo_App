@@ -8,10 +8,13 @@ public class TaskItem extends JPanel {
     private JTextPane taskDescription;
     private JComboBox priorityComboBox;
     private JButton deleteButton;
+    private MainWindow mainWindow;
     private JPanel containerPanel;
     private Task task;
 
-    public TaskItem(JPanel givenContainerPanel) {
+    public TaskItem(JPanel givenContainerPanel, MainWindow givenMainWindow, Task givenTask) {
+        this.mainWindow = givenMainWindow;
+        this.task = givenTask;
         this.containerPanel = givenContainerPanel;
         this.setBackground(new Color(237, 237, 142));
         initializeTaskItem(givenContainerPanel);
@@ -26,7 +29,7 @@ public class TaskItem extends JPanel {
 
     public void initializeTaskItem(JPanel givenContainerPanel) {
         //task description:
-        this.taskDescription = new JTextPane();
+        /*this.taskDescription = new JTextPane();
         taskDescription.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         taskDescription.setPreferredSize(new Dimension(310, 50));
         taskDescription.setContentType("text/html");
@@ -41,8 +44,13 @@ public class TaskItem extends JPanel {
                 taskDescription.setBackground(null);
                 reColor();
             }
-        });
+        });*/
 
+        //Task Name:
+        JLabel taskNameLabel = new JLabel(task.getName());
+        taskNameLabel.setFont(new Font("Serif", Font.PLAIN, 16));
+        taskNameLabel.setPreferredSize(new Dimension(310, 50));
+        taskNameLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         //is Done checkbox:
         this.isDoneBox = new JCheckBox();
@@ -85,12 +93,14 @@ public class TaskItem extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 deleteTask();
+                mainWindow.deleteTask(task);
             }
         });
 
 
         //add them to the panel:
-        add(taskDescription);
+        //add(taskDescription);
+        add(taskNameLabel);
         add(isDoneBox);
         add(priorityComboBox);
         add(deleteButton);
