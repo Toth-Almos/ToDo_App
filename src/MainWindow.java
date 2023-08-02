@@ -78,26 +78,30 @@ public class MainWindow extends JFrame {
         addNewTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //create new Task and TaskItem:
-                Task newTask = new Task("Test Name hihi", Priority.LOW);
-                taskList.add(newTask);
+                //add new task button:
+                String taskName = JOptionPane.showInputDialog("Name of the Task: ");
+                if(taskName != null) {
+                    //create new Task and TaskItem:
+                    Task newTask = new Task(taskName, Priority.LOW);
+                    taskList.add(newTask);
 
-                TaskItem newTaskItem = new TaskItem(taskItemList, getMainWindow(), newTask);
-                newTaskItem.setTask(newTask);
-                taskItemList.add(newTaskItem);
+                    TaskItem newTaskItem = new TaskItem(taskItemList, getMainWindow(), newTask);
+                    newTaskItem.setTask(newTask);
+                    taskItemList.add(newTaskItem);
 
 
-                //if there were any previous tasks, it loses the focus:
-                if(taskItemList.getComponentCount() > 1) {
-                    TaskItem previousTask = (TaskItem) taskItemList.getComponent((taskItemList.getComponentCount() - 2));
-                    //previousTask.getTaskDescription().setBackground(null);
+                    //if there were any previous tasks, it loses the focus:
+                    if (taskItemList.getComponentCount() > 1) {
+                        TaskItem previousTask = (TaskItem) taskItemList.getComponent((taskItemList.getComponentCount() - 2));
+                        //previousTask.getTaskDescription().setBackground(null);
+                    }
+
+                    //the new task gets the focus:
+                    //newTaskItem.getTaskDescription().requestFocus();
+                    sortTypeLabel.setText("None");
+                    repaint();
+                    revalidate();
                 }
-
-                //the new task gets the focus:
-                //newTaskItem.getTaskDescription().requestFocus();
-                sortTypeLabel.setText("None");
-                repaint();
-                revalidate();
             }
         });
 
