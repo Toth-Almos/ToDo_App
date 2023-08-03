@@ -5,7 +5,6 @@ import java.util.Comparator;
 
 public class TaskItem extends JPanel {
     private JCheckBox isDoneBox;
-    private JTextPane taskDescription;
     private JComboBox priorityComboBox;
     private JButton deleteButton;
     private MainWindow mainWindow;
@@ -18,6 +17,14 @@ public class TaskItem extends JPanel {
         this.containerPanel = givenContainerPanel;
         this.setBackground(new Color(237, 237, 142));
         initializeTaskItem(givenContainerPanel);
+
+        //set isDone checkbox:
+        if(this.task.getIsDone()) {
+            checkCheckBox();
+        }
+
+        //set priority combo-box:
+        setPriorityComboBoxToTaskPriority();
     }
 
     public TaskItem(JPanel givenContainerPanel, Task task) {
@@ -28,24 +35,6 @@ public class TaskItem extends JPanel {
     }
 
     public void initializeTaskItem(JPanel givenContainerPanel) {
-        //task description:
-        /*this.taskDescription = new JTextPane();
-        taskDescription.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        taskDescription.setPreferredSize(new Dimension(310, 50));
-        taskDescription.setContentType("text/html");
-        taskDescription.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                taskDescription.setBackground(Color.WHITE);
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                taskDescription.setBackground(null);
-                reColor();
-            }
-        });*/
-
         //Task Name:
         JLabel taskNameLabel = new JLabel(task.getName());
         taskNameLabel.setFont(new Font("Serif", Font.PLAIN, 16));
@@ -139,7 +128,6 @@ public class TaskItem extends JPanel {
     }
 
     //getters and setters:
-    public JTextPane getTaskDescription() { return this.taskDescription; }
     public Task getTask() { return this.task; }
 
     public void setTask(Task task) { this.task = task; }

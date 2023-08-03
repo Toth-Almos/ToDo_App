@@ -2,13 +2,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 import java.util.*;
-import java.util.List;
 
 public class MainWindow extends JFrame {
     private JPanel taskItemList;
     private JPanel listContainer;
     private ArrayList<Task> taskList;
+    private JLabel sortTypeLabel;
+    private final String dataFile = "task_data";
 
     public MainWindow() {
         super("To Do List");
@@ -23,6 +25,8 @@ public class MainWindow extends JFrame {
         this.taskList = new ArrayList<Task>();
 
         this.initializeFrame();
+        readTasksFromFile();
+        revalidate();
     }
 
     public void initializeFrame() {
@@ -57,23 +61,30 @@ public class MainWindow extends JFrame {
         //sort button:
         JButton sortButton = new JButton("Sort");
         sortButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        sortButton.setBounds(270, 630, 120, 50);
+        sortButton.setBounds(290, 630, 120, 50);
         sortButton.setFocusPainted(false);
 
         //sort type label:
-        JLabel sortTypeLabel = new JLabel("None");
-        sortTypeLabel.setBounds(400, 630, 120, 50);
+        this.sortTypeLabel = new JLabel("None");
+        sortTypeLabel.setBounds(325, 680, 120, 30);
         sortTypeLabel.setForeground(Color.WHITE);
         sortTypeLabel.setFont(new Font("Serif", Font.PLAIN, 20));
+
+        //save button:
+        JButton saveButton = new JButton("Save");
+        saveButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        saveButton.setBounds(420, 630, 120, 50);
+        saveButton.setFocusPainted(false);
 
         //add them to the frame:
         this.getContentPane().add(addNewTaskButton);
         this.getContentPane().add(clearButton);
         this.getContentPane().add(sortButton);
         this.getContentPane().add(sortTypeLabel);
+        this.getContentPane().add(saveButton);
         this.getContentPane().add(scrollPane);
 
-        //Action listeners:
+        //Action listeners:----------------------------------------------------------------------------------------------------------
         //add new task ActionListener:
         addNewTaskButton.addActionListener(new ActionListener() {
             @Override
@@ -82,19 +93,12 @@ public class MainWindow extends JFrame {
                 String taskName = JOptionPane.showInputDialog("Name of the Task: ");
                 if(taskName != null) {
                     //create new Task and TaskItem:
-                    Task newTask = new Task(taskName, Priority.LOW);
+                    Task newTask = new Task(taskName, Priority.LOW, false);
                     taskList.add(newTask);
 
                     TaskItem newTaskItem = new TaskItem(taskItemList, getMainWindow(), newTask);
                     newTaskItem.setTask(newTask);
                     taskItemList.add(newTaskItem);
-
-
-                    //if there were any previous tasks, it loses the focus:
-                    if (taskItemList.getComponentCount() > 1) {
-                        TaskItem previousTask = (TaskItem) taskItemList.getComponent((taskItemList.getComponentCount() - 2));
-                        //previousTask.getTaskDescription().setBackground(null);
-                    }
 
                     //the new task gets the focus:
                     //newTaskItem.getTaskDescription().requestFocus();
@@ -136,59 +140,129 @@ public class MainWindow extends JFrame {
         sortButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("number of tasks: " + taskList.size());
-
-                //delete all taskItems:
-                Iterator<Component> iterator = Arrays.stream(taskItemList.getComponents()).iterator();
-                while (iterator.hasNext()) {
-                    Component i = iterator.next();
-                    ((TaskItem) i).deleteTask();
-                }
-
-                //sort taskList and rotate sorting types:
-                switch (sortTypeLabel.getText()) {
-                    case "None":
-                    case "Is Done":
-                        Collections.sort(taskList, new PriorityComparator());
-                        //sortTypeNumber = 1;
-                        sortTypeLabel.setText("Priority");
-                        break;
-                    case "Priority":
-                        Collections.sort(taskList, new IsDoneComparator());
-                        //sortTypeNumber = 2;
-                        sortTypeLabel.setText("Is Done");
-                        break;
-                }
-
-
-                //add all task as taskItems in the sorted order:
-                for (Task t : taskList) {
-                    //create new Task and TaskItem:
-                    TaskItem newTaskItem = new TaskItem(taskItemList, getMainWindow(), t);
-                    newTaskItem.setTask(t);
-                    taskItemList.add(newTaskItem);
-
-                    //check checkbox if needed:
-                    if(t.getIsDone()) {
-                        newTaskItem.checkCheckBox();
-                    }
-
-                    //set priority combo boxes:
-                    newTaskItem.setPriorityComboBoxToTaskPriority();
-
-                    //if there were any previous tasks, it loses the focus:
-                    if(taskItemList.getComponentCount() > 1) {
-                        TaskItem previousTask = (TaskItem) taskItemList.getComponent((taskItemList.getComponentCount() - 2));
-                        //previousTask.getTaskDescription().setBackground(null);
-                    }
-
-                    //the new task gets the focus:
-                    //newTaskItem.getTaskDescription().requestFocus();
-                    repaint();
-                    revalidate();
-                }
+                sortTasks();
             }
         });
+
+
+        //Save button ActionListener:
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveTasksToFile();
+            }
+        });
+    }
+
+
+    public void readTasksFromFile() {
+        File data = new File(dataFile);
+        if(data.exists()) {
+            FileInputStream fis;
+            try {
+                fis = new FileInputStream(dataFile);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            Scanner scanner = new Scanner(fis);
+            while(scanner.hasNextLine()) {
+                //create scanner:
+                String[] properties = scanner.nextLine().split(";");
+                System.out.println(properties[0]);
+
+                if(properties.length == 3) {
+                    //transform to Priority type:
+                    Priority tmpPrior;
+                    switch (properties[1]) {
+                        case "MEDIUM":
+                            tmpPrior = Priority.MEDIUM;
+                            break;
+                        case "HIGH":
+                            tmpPrior = Priority.HIGH;
+                            break;
+                        default:
+                            tmpPrior = Priority.LOW;
+                            break;
+                    }
+
+                    //transform to boolean:
+                    boolean tmpIsDon;
+                    switch (properties[2]) {
+                        case "true":
+                            tmpIsDon = true;
+                            break;
+                        default:
+                            tmpIsDon = false;
+                            break;
+                    }
+
+                    //create Task:
+                    Task tempTask = new Task(properties[0], tmpPrior, tmpIsDon);
+                    taskList.add(tempTask);
+                }
+            }
+            //sort the taskItemList:
+            sortTasks();
+        }
+    }
+
+    public void saveTasksToFile() {
+        FileWriter fw;
+        try {
+            fw = new FileWriter(dataFile);
+            for (Task t : taskList) {
+                fw.write(t.getName() + ";" + t.getPriority() + ";" + t.getIsDone() + "\n");
+            }
+            fw.close();
+        } catch (IOException e) {
+            System.out.println("Error occurred while saving task!");
+            e.printStackTrace();
+        }
+
+    }
+
+    public void sortTasks() {
+        //delete all taskItems:
+        Iterator<Component> iterator = Arrays.stream(taskItemList.getComponents()).iterator();
+        while (iterator.hasNext()) {
+            Component i = iterator.next();
+            ((TaskItem) i).deleteTask();
+        }
+
+        //sort taskList and rotate sorting types:
+        switch (sortTypeLabel.getText()) {
+            case "None":
+            case "Is Done":
+                Collections.sort(taskList, new PriorityComparator());
+                //sortTypeNumber = 1;
+                sortTypeLabel.setText("Priority");
+                break;
+            case "Priority":
+                Collections.sort(taskList, new IsDoneComparator());
+                //sortTypeNumber = 2;
+                sortTypeLabel.setText("Is Done");
+                break;
+        }
+
+        //add all task as taskItems in the sorted order:
+        for (Task t : taskList) {
+            //create new Task and TaskItem:
+            TaskItem newTaskItem = new TaskItem(taskItemList, getMainWindow(), t);
+            taskItemList.add(newTaskItem);
+
+            //check checkbox if needed:
+            if(t.getIsDone()) {
+                newTaskItem.checkCheckBox();
+            }
+
+            //set priority combo boxes:
+            newTaskItem.setPriorityComboBoxToTaskPriority();
+
+            //the new task gets the focus:
+            repaint();
+            revalidate();
+        }
+        System.out.println("number of tasks: " + taskList.size() + "\n");
     }
 
     public MainWindow getMainWindow() { return this; }

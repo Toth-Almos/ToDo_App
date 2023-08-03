@@ -3,10 +3,10 @@ public class Task {
     private Priority priority;
     private boolean isDone;
 
-    public Task(String givenName, Priority givenPriority) {
+    public Task(String givenName, Priority givenPriority, boolean givenIsDone) {
         name = givenName;
         priority = givenPriority;
-        isDone = false;
+        isDone = givenIsDone;
     }
 
 
