@@ -3,6 +3,8 @@ This little application is one of my projects I did during my summer vacation.
 The main purpose of this project was to practice and learn.
 The foundation and the base design of this application was made by [TapTap](https://github.com/curadProgrammer).
 
+
+
 # How to Run
 To run the application on your computer, follow these steps:
 
