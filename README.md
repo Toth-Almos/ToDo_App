@@ -2,8 +2,7 @@
 This little application is one of my projects I did during my summer vacation.
 The main purpose of this project was to practice and learn.
 The foundation and the base design of this application was made by [TapTap](https://github.com/curadProgrammer).
-
-
+#### This is a To-Do application, where you can add new tasks, change their priority and mark them if they are done. You can also sort them with different options. The application also has a save and load function with the help of a text file.
 
 # How to Run
 To run the application on your computer, follow these steps:
@@ -34,4 +33,7 @@ For example, if the program folder is located at C:\Projects\ToDoApp\src, you wo
     java -cp bin App
     ```
 
-
+# Some Images
+![img_2](ToDo_2.JPG)
+![img_3](ToDo_3.JPG)
+![img_1](ToDo_1.JPG)
